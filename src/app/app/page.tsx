@@ -7,6 +7,7 @@ import ScenarioList from '@/components/lingoflow/ScenarioList';
 import ChatPanel from '@/components/lingoflow/ChatPanel';
 import SummaryPanel from '@/components/lingoflow/SummaryPanel';
 import { generateSessionSummary } from '@/lib/actions';
+import type { SessionSummaryOutput } from '@/ai/flows/session-summary';
 
 export type SessionState = 'idle' | 'active' | 'ended';
 export type Message = {
@@ -19,9 +20,7 @@ export type Message = {
   };
 };
 
-export type Summary = {
-  summary: string;
-};
+export type Summary = SessionSummaryOutput;
 
 export default function AppPage() {
   const [sessionState, setSessionState] = useState<SessionState>('idle');
@@ -55,7 +54,7 @@ export default function AppPage() {
       setSummary(result);
     } catch (error) {
       console.error("Failed to generate session summary:", error);
-      setSummary({ summary: "We couldn't generate a summary for this session. Please try again." });
+      // setSummary({ summary: "We couldn't generate a summary for this session. Please try again." });
     } finally {
       setIsSummaryLoading(false);
     }

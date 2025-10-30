@@ -2,7 +2,7 @@ import type { Summary } from '@/app/app/page';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { LoaderCircle, FileText, BookMarked, RefreshCw } from 'lucide-react';
+import { LoaderCircle, FileText, BookMarked, RefreshCw, Lightbulb, Target, BookCopy } from 'lucide-react';
 
 type SummaryPanelProps = {
   summary: Summary | null;
@@ -13,21 +13,6 @@ type SummaryPanelProps = {
 };
 
 export default function SummaryPanel({ summary, isLoading, savedVocabulary, onReset, sessionEnded }: SummaryPanelProps) {
-  const renderSummary = (text: string) => {
-    return text.split('\n').map((line, index) => {
-        const trimmedLine = line.trim();
-        if (trimmedLine.startsWith('* ') || trimmedLine.startsWith('- ')) {
-            return <li key={index} className="ml-4 mb-1 list-disc">{trimmedLine.substring(2)}</li>;
-        }
-        if (trimmedLine.length > 0 && (trimmedLine.includes(':') || trimmedLine.endsWith('.'))) {
-            return <p key={index} className="mb-3">{trimmedLine}</p>;
-        }
-        if (trimmedLine.length > 0) {
-            return <h4 key={index} className="font-semibold text-md mt-4 mb-2">{trimmedLine}</h4>
-        }
-        return null;
-    });
-  }
   
   return (
     <div className="flex flex-col h-full">
@@ -39,7 +24,7 @@ export default function SummaryPanel({ summary, isLoading, savedVocabulary, onRe
       </div>
 
       <ScrollArea className="flex-grow">
-        <div className="p-4 space-y-6">
+        <div className="p-4 space-y-4">
           {isLoading && (
             <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground pt-20">
               <LoaderCircle className="h-8 w-8 animate-spin mb-4" />
@@ -54,42 +39,94 @@ export default function SummaryPanel({ summary, isLoading, savedVocabulary, onRe
                 <p className="text-sm">Complete your session to see your results.</p>
              </div>
           )}
+          
+          {!isLoading && !summary && sessionEnded && (
+             <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground pt-20">
+                <p className="font-semibold">Could not generate summary.</p>
+                <p className="text-sm">Please try another session.</p>
+             </div>
+          )}
 
           {!isLoading && summary && (
-            <div>
+            <div className='space-y-4'>
               <Card>
                 <CardHeader>
-                  <CardTitle>AI Analysis</CardTitle>
+                  <CardTitle className='text-base'>Performance Overview</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-sm text-foreground/90 space-y-2">
-                    {renderSummary(summary.summary)}
-                  </div>
+                  <p className="text-sm text-foreground/90">{summary.performanceOverview}</p>
                 </CardContent>
               </Card>
-            </div>
-          )}
-          
-          {(sessionEnded || savedVocabulary.length > 0) && (
-             <Card>
+
+              <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <BookMarked className="h-5 w-5" />
-                     Saved Vocabulary
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <BookCopy className="h-5 w-5" />
+                     Key Vocabulary
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {savedVocabulary.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
-                      {savedVocabulary.map(word => (
+                      {summary.keyVocabulary.map(word => (
                         <div key={word} className="bg-primary/10 text-primary-foreground font-medium text-sm px-3 py-1 rounded-full border border-primary/20 font-code">
                           {word}
                         </div>
                       ))}
                     </div>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">You haven't saved any words yet. Tap on words in the chat to translate and save them.</p>
-                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Lightbulb className="h-5 w-5" />
+                     Grammar Points to Review
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className='space-y-3'>
+                  {summary.grammarPoints.map((point, index) => (
+                    <div key={index}>
+                      <h4 className="font-semibold text-sm">{point.point}</h4>
+                      <p className="text-sm text-muted-foreground">{point.explanation}</p>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Target className="h-5 w-5" />
+                     Practice Suggestions
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2 text-sm text-muted-foreground list-disc pl-4">
+                    {summary.practiceSuggestions.map((suggestion, index) => (
+                      <li key={index}>{suggestion}</li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+          
+          {(sessionEnded && savedVocabulary.length > 0) && (
+             <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <BookMarked className="h-5 w-5" />
+                     All Saved Vocabulary
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2">
+                    {savedVocabulary.map(word => (
+                      <div key={word} className="bg-secondary text-secondary-foreground font-medium text-sm px-2.5 py-1 rounded-full font-code">
+                        {word}
+                      </div>
+                    ))}
+                  </div>
                 </CardContent>
               </Card>
           )}
