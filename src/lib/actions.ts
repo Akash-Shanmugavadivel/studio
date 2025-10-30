@@ -10,8 +10,12 @@ import {
 } from '@/ai/flows/session-summary';
 import {
     translateWord as translateWordFlow,
-    type TranslateWordInput,
 } from '@/ai/flows/translate-word-flow';
+import type { TranslateWordInput } from '@/ai/flows/translate-word-flow';
+import {
+  translateSentence as translateSentenceFlow,
+} from '@/ai/flows/translate-sentence-flow';
+import type { TranslateSentenceInput } from '@/ai/flows/translate-sentence-flow';
 
 
 export async function correctGerman(input: ContextualCorrectionInput) {
@@ -32,4 +36,9 @@ export async function translateWord(word: string) {
     const cleanedWord = word.toLowerCase().replace(/[.,!?;:]/g, '');
     
     return translateWordFlow({ word: cleanedWord });
+}
+
+export async function translateSentence(sentence: string) {
+    await new Promise(resolve => setTimeout(resolve, 400));
+    return translateSentenceFlow({ sentence });
 }
