@@ -11,12 +11,12 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const TranslateSentenceInputSchema = z.object({
+const TranslateSentenceInputSchema = z.object({
   sentence: z.string().describe('The German sentence to translate.'),
 });
 export type TranslateSentenceInput = z.infer<typeof TranslateSentenceInputSchema>;
 
-export const TranslateSentenceOutputSchema = z.object({
+const TranslateSentenceOutputSchema = z.object({
   translation: z.string().describe('The English translation of the sentence.'),
 });
 export type TranslateSentenceOutput = z.infer<typeof TranslateSentenceOutputSchema>;
