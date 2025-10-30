@@ -11,12 +11,12 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const TranslateWordInputSchema = z.object({
+const TranslateWordInputSchema = z.object({
   word: z.string().describe('The German word to translate.'),
 });
 export type TranslateWordInput = z.infer<typeof TranslateWordInputSchema>;
 
-export const TranslateWordOutputSchema = z.object({
+const TranslateWordOutputSchema = z.object({
   translation: z.string().describe('The English translation of the word.'),
   pos: z.string().describe('The part of speech of the word (e.g., noun, verb, adjective).'),
 });
