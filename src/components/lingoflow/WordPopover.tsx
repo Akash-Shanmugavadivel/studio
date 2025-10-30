@@ -22,10 +22,12 @@ export default function WordPopover({ word, onSaveVocab }: WordPopoverProps) {
   const [translation, setTranslation] = useState<Translation | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
 
-  const handleOpenChange = async (open: boolean) => {
-    if (open && !translation) {
+  const handleDoubleClick = async () => {
+    setIsOpen(true);
+    if (!translation) {
       setIsLoading(true);
       try {
         const result = await translateWord(word);
@@ -46,9 +48,12 @@ export default function WordPopover({ word, onSaveVocab }: WordPopoverProps) {
   };
 
   return (
-    <Popover onOpenChange={handleOpenChange}>
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <span className="cursor-pointer hover:bg-accent/20 rounded-md p-0.5 -m-0.5 transition-colors duration-200">
+        <span
+          onDoubleClick={handleDoubleClick}
+          className="cursor-pointer hover:bg-accent/20 rounded-md p-0.5 -m-0.5 transition-colors duration-200"
+        >
           {word}
         </span>
       </PopoverTrigger>
