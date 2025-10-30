@@ -48,15 +48,16 @@ export default function ChatPanel({
     e.preventDefault();
     if (!input.trim() || isLoading || sessionState === 'ended') return;
 
-    const newUserMessage: Message = { role: 'user', text: input };
-    setMessages(prev => [...prev, newUserMessage]);
+    const userMessage: Message = { role: 'user', text: input };
+    setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
 
     try {
       const result = await correctGerman({ userMessage: input, scenario: scenario.title });
-      const assistantMessage: Message = {
-        role: 'assistant',
+      
+      const correctedUserMessage: Message = {
+        role: 'user',
         text: result.correctedText,
         correction: {
           isCorrected: result.correction,
@@ -65,9 +66,17 @@ export default function ChatPanel({
         },
       };
 
+      // Replace user's original message with the corrected one
+      setMessages(prev => [...prev.slice(0, -1), correctedUserMessage]);
+      
       if(result.correction) {
         addCorrection(result.explanationEn);
       }
+      
+      const assistantMessage: Message = {
+        role: 'assistant',
+        text: result.assistantResponse,
+      };
       
       // Simulate AI response delay for a more natural feel
       setTimeout(() => {

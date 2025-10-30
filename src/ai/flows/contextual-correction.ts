@@ -21,6 +21,7 @@ const ContextualCorrectionOutputSchema = z.object({
   correction: z.boolean().describe('Whether or not a correction was made.'),
   correctedText: z.string().describe('The corrected version of the user\u2019s message.'),
   explanationEn: z.string().describe('A short explanation of the correction in English.'),
+  assistantResponse: z.string().describe('A conversational reply in German to the user\'s message, continuing the scenario.'),
 });
 export type ContextualCorrectionOutput = z.infer<typeof ContextualCorrectionOutputSchema>;
 
@@ -32,11 +33,14 @@ const prompt = ai.definePrompt({
   name: 'contextualCorrectionPrompt',
   input: {schema: ContextualCorrectionInputSchema},
   output: {schema: ContextualCorrectionOutputSchema},
-  prompt: `You are an expert German language tutor, providing contextual corrections and explanations.
+  prompt: `You are an expert German language tutor, providing contextual corrections and explanations, while also acting as a conversation partner.
 
   The user is in the following scenario: {{{scenario}}}.
 
-  Correct the user's message for grammar and phrasing, providing a short explanation in English. If no correction is needed, indicate that no correction was made.
+  Your tasks are:
+  1.  Correct the user's message for grammar and phrasing. If no correction is needed, indicate that.
+  2.  Provide a short explanation for the correction in English.
+  3.  Provide a natural, conversational reply in German to the user's message to continue the role-playing scenario.
 
   User Message: {{{userMessage}}}
 
@@ -44,19 +48,24 @@ const prompt = ai.definePrompt({
   - correction (boolean): true if a correction was made, false otherwise.
   - correctedText (string): The corrected version of the user's message. If no correction was made, this should be the same as the user's message.
   - explanationEn (string): A short explanation of the correction in English. If no correction was made, this should be an empty string.
+  - assistantResponse (string): Your conversational reply in German.
 
   Example 1:
+  User Message: "Ich will ein Kaffee."
   {
     "correction": true,
     "correctedText": "Ich m\u00f6chte einen Kaffee, bitte.",
-    "explanationEn": "'m\u00f6chte' is more polite than 'will'."
+    "explanationEn": "'m\u00f6chte' is more polite than 'will', and 'Kaffee' is masculine, so it requires 'einen'.",
+    "assistantResponse": "Nat\u00fcrlich, einen Kaffee. Kommt sofort! M\u00f6chten Sie auch etwas essen?"
   }
 
   Example 2:
+  User Message: "Hallo, wie geht es Ihnen?"
   {
     "correction": false,
     "correctedText": "Hallo, wie geht es Ihnen?",
-    "explanationEn": ""
+    "explanationEn": "",
+    "assistantResponse": "Danke, gut. Und Ihnen? Was kann ich f\u00fcr Sie tun?"
   }
   `,
 });

@@ -35,7 +35,7 @@ export default function ChatMessage({ message, onSaveVocab }: ChatMessageProps) 
             <p className="font-code">{renderTextWithPopovers(message.text)}</p>
           </CardContent>
         </Card>
-        {!isUser && message.correction && (
+        {isUser && message.correction && (
           hasCorrection ? (
             <div className="mt-2 flex items-start text-sm text-green-400 gap-2 p-2 bg-green-950/50 border border-green-800/50 rounded-md">
               <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0" />
